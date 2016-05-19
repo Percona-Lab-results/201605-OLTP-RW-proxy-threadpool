@@ -15,3 +15,5 @@ Results
 -------
 
 ![](summary-OLTP-RW-proxy_files/figure-markdown_github/proxysql-1.png)
+
+![](summary-OLTP-RW-proxy_files/figure-markdown_github/proxysqllat-1.png)

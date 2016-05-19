@@ -63,6 +63,20 @@ m+geom_line()+geom_errorbar(aes(ymin=tps-se, ymax=tps+se),width=0.15)+labs(x="Th
 
 ```
 
+```{r proxysqllat, echo=FALSE, fig.height=8, fig.width=10, warning=FALSE}
+title <- "[network] sysbench OLTP RW memory - proxy latency"
+p2 = dbGetQuery( con,'select sr.runid runidfull,sr.threads, avg(tps) tps, STDDEV_POP(tps) se,avg(rt) rt, STDDEV_POP(rt) sert
+                 from sbtest_results sr,(select runid,threads from sbtest_results where (runid like "OLTP-RW-MEM-3#smblade01-net#%") group by runid,threads having count(*) > 10) t 
+                 where sec>100 and sec<600 and (sr.runid like "OLTP-RW-MEM-3#smblade01-net#%")
+                 and sr.runid=t.runid and sr.threads=t.threads GROUP BY sr.runid, sr.threads
+                 ' )
 
+p2$runid <- str_extract(p2$runidfull, "([^#]*)$")
+
+ss=subset(p2 )
+m <- ggplot(ss, aes(x=as.factor(threads),y=as.numeric(rt),color=runid,group=runid))
+m+geom_line()+geom_errorbar(aes(ymin=rt-sert, ymax=rt+sert),width=0.15)+labs(x="Threads",y="95% Response time, microsec, log10 scale",title=title)+scale_y_log10(breaks=c(1,1000,2000,3000,4000,5000,75000,10000,25000,50000,100000,150000,200000,300000,400000),labels = scales::comma)+theme(axis.text.x  = element_text(angle=45, vjust=0.5))+tm+scale_color_tableau(name="Version")
+
+```
 
 
